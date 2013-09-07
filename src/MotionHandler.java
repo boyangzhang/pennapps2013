@@ -23,6 +23,13 @@ public class MotionHandler {
 		framesWithDecreasingFingerNumbers = new LinkedList<Integer>();
 		framesWithIncreasingFingerNumbers = new LinkedList<Integer>();
 	}
+	
+	private static boolean checkThatPalmIsFaceDown(Hand hand) {
+		Vector normal = hand.palmNormal();
+		return Math.toDegrees(normal.pitch()) <= -45 && 
+				Math.toDegrees(normal.roll()) <= 10 &&
+				Math.toDegrees(normal.roll()) >= -10;
+	}
 
 	private static boolean checkIfUserHasMadeFist(Hand hand) {
 				
@@ -42,10 +49,7 @@ public class MotionHandler {
 		framesWithDecreasingFingerNumbers.add(numberOfFingers);
 		
 		// ensure that palm is face down
-		Vector normal = hand.palmNormal();
-		boolean palmIsFaceDown = 	Math.toDegrees(normal.pitch()) <= -45 && 
-									Math.toDegrees(normal.roll()) <= 10 &&
-									Math.toDegrees(normal.roll()) >= -10;
+		boolean palmIsFaceDown = checkThatPalmIsFaceDown(hand);
 		
 		
 		boolean userHasMadeFist = (numberOfFingers <= 1) && !fingersAreIncreasing && palmIsFaceDown;
@@ -55,7 +59,7 @@ public class MotionHandler {
 	private static boolean checkIfUserOpenedFist(Hand hand) {
 		int numberOfFingers = hand.fingers().count();
 		
-		// ensure that fist is closing --> # fingers is decreasing
+		// ensure that fist is OPENING --> # fingers is INCREASING
 		boolean fingersAreDecreasing = true;
 		if (!framesWithIncreasingFingerNumbers.isEmpty()) {
 			int lastNumberOfFingers = framesWithIncreasingFingerNumbers.getLast();
@@ -69,11 +73,7 @@ public class MotionHandler {
 		framesWithIncreasingFingerNumbers.add(numberOfFingers);
 		
 		// ensure that palm is face down
-		Vector normal = hand.palmNormal();
-		boolean palmIsFaceDown = 	Math.toDegrees(normal.pitch()) <= -45 && 
-									Math.toDegrees(normal.roll()) <= 10 &&
-									Math.toDegrees(normal.roll()) >= -10;
-		
+		boolean palmIsFaceDown = checkThatPalmIsFaceDown(hand);		
 		
 		boolean userHasOpenedFist = (numberOfFingers == 5) && !fingersAreDecreasing && palmIsFaceDown;
 		return userHasOpenedFist;
