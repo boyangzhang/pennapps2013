@@ -1,18 +1,12 @@
-import com.leapmotion.leap.Controller;
-import com.leapmotion.leap.Frame;
-
-import org.jfugue.*;
-
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.ShortMessage;
-import javax.sound.midi.Synthesizer;
+
+import com.leapmotion.leap.Controller;
+import com.leapmotion.leap.Frame;
 
 
 public class LeapRunner {
@@ -24,7 +18,7 @@ public class LeapRunner {
 	static int timeInterval = 10;		// in milliseconds
 	
 	public static void main(String[] args) {
-/*
+
 		try {
 			player = new MIDIMusic("tnfdm.mid");
 			player.sequencer.open();
@@ -40,17 +34,8 @@ public class LeapRunner {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		*/
+		
 		// create Controller object
-			 
-			    try {
-					Synthesizer synth = MidiSystem.getSynthesizer();
-				} catch (MidiUnavailableException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			   
-			    
         final Controller controller = new Controller();
         final MotionHandler motionHandler = new MotionHandler();
         
@@ -73,17 +58,12 @@ public class LeapRunner {
         			return;
         		
         		if (event.equals("PAUSE")) {
-        			//player.pause();
-
+        			player.pause();
         		}
         		else if (event.equals("PLAY")) {
-        			//player.play();
-        			(new MusicStringThread()).start();
-        		}     			
-        			
+        			player.play();
         		}
-
-        	
+        	}
         	}, 1, timeInterval);
 
         // Have the listener receive events from the controller
