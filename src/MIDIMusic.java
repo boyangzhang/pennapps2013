@@ -10,7 +10,8 @@ public class MIDIMusic {
 	Synthesizer synthesizer;
 	
 	public MIDIMusic(String filename) throws InvalidMidiDataException, IOException, MidiUnavailableException {
-		sequence    = MidiSystem.getSequence(new File("tnfdm.mid"));
+//		sequence    = MidiSystem.getSequence(new File("tnfdm.mid"));
+		sequence    = MidiSystem.getSequence(new File(filename));
 		sequencer   = MidiSystem.getSequencer(true);
 		sequencer.setSequence(sequence);
 		synthesizer = MidiSystem.getSynthesizer();
