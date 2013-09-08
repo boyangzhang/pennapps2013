@@ -4,25 +4,75 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiUnavailableException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 
 public class GraphicsFrontend {
 
+	public static Timer timer;
+	private static int timeInterval = 20;		// in milliseconds
+
 	private static void createAndShowGUI() {
+		
+		
+		
 		//Create and set up the window.
 		JFrame frame = new JFrame("LeapMotion Music");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		Note[] notes = { new Note(0,10,30), new Note(10,20,5), new Note(30,50,10), new Note(80, 500, 100) };
+		Channel[] channels = { new Channel(notes) };
+
+		final TrackPanel tp = new TrackPanel(channels);
+		frame.add(tp);
 		
+		timer = new Timer();
+		timer.schedule(new TimerTask() {
+			public void run()  {
+				// move cursor
+				tp.cursorXPos++;
+				tp.repaintAll();
+			}
+		}, 1, timeInterval);
+
+		frame.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					if (timer != null){
+						timer.cancel();
+						timer = null;
+					}
+					else {
+						timer = new Timer();
+						timer.schedule(new TimerTask() {
+							public void run()  {
+								// move cursor
+								tp.cursorXPos++;
+								tp.repaintAll();
+							}
+						}, 1, timeInterval);
+					}
+				}
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {}
+
+			@Override
+			public void keyTyped(KeyEvent e) {}
+		});
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		/*
 		 * TODO: Need a way to properly load all channel data
 		 */
-		
-		Note[] notes = { new Note(0,10,30), new Note(10,20,5), new Note(20,50,10) };
-		Channel[] channels = { new Channel(notes) };
-		frame.add(new TrackPanel(channels));
 
 		//Display the window.
 		frame.pack();
@@ -34,6 +84,26 @@ public class GraphicsFrontend {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				createAndShowGUI();
+
+				//				LeapRunner runner = new LeapRunner();
+				//				runner.playSong();
+
+				MIDIMusic player;
+				try {
+					player = new MIDIMusic("tnfdm.mid");
+					//					player.sequencer.open();
+					//					player.play();
+				} catch (InvalidMidiDataException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (MidiUnavailableException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
 			}
 		});
 	}
@@ -42,56 +112,42 @@ public class GraphicsFrontend {
 @SuppressWarnings("serial")
 class TrackPanel extends JPanel {
 
-	int netOffset = 0;
-	Channel[] channels;
-	
+	public Channel[] channels;
+	public int cursorXPos;
+	private int windowHeight;
+
 	public TrackPanel(Channel[] channels) {
 		this.channels = channels;
-		// Keystroke listener
-		addKeyListener(new KeyListener() {
-			public void keyTyped(KeyEvent e) {
-				if (e.getKeyCode() == e.VK_LEFT) {
-					if (netOffset > 0) {
-						netOffset--;
-					}
-				}
-				else if (e.getKeyCode() == e.VK_RIGHT) {
-					netOffset++;
-				}
-				repaintAll();
-			}
-			public void keyPressed(KeyEvent e) {
-			}
-			public void keyReleased(KeyEvent e) {
-			}
-		});
+		cursorXPos = 0;
+
 	}
 
 	public Dimension getPreferredSize() {
 		return Toolkit.getDefaultToolkit().getScreenSize();
 	}
-	
+
 	public Color getBackground() {
-		return new Color(0,0,0);
+		return Color.black;
 	}
-	
+
 	public boolean getFocusable() {
 		return true;
 	}
 
-	private void repaintAll() {
+	public void repaintAll() {
 		int channelCount = channels.length;
 		int channelHeight = this.getHeight()/channelCount;
 		for (int i = 0; i < channelCount; i++) {
 			Note[] notes = channels[i].getNotes();
 			for (int j = 0; j < notes.length; j++) {
 				Note note = notes[j];
-				repaint(note.getStart() + netOffset, note.getPitch(), 
+				repaint(note.getStart(), note.getPitch(), 
 						note.getDuration(), channelHeight/note.getPitch());
 			}
 		}
+		repaint(cursorXPos, 0, 2, windowHeight);
 	}
-	
+
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		int channelCount = channels.length;
@@ -100,11 +156,15 @@ class TrackPanel extends JPanel {
 			Note[] notes = channels[i].getNotes();
 			for (int j = 0; j < notes.length; j++) {
 				Note note = notes[j];
-				g.setColor(new Color(254,0,0));
-				g.fillRect(note.getStart() + netOffset, note.getPitch(), 
+				g.setColor(new Color((j+1) * 50,0,0));
+				g.fillRect(note.getStart(), note.getPitch(), 
 						note.getDuration(), channelHeight/note.getPitch());
 			}
 		}
+		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+		windowHeight = topFrame.getHeight();
+		g.setColor(Color.green);
+		g.fillRect(cursorXPos, 0, 2, windowHeight);
 	}
 
 }

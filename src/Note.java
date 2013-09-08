@@ -8,6 +8,7 @@ public class Note {
 	public Note(int start, int duration, int pitch) {
 		this.duration = duration;
 		this.pitch = pitch;
+		this.start = start;
 	}
 	
 	public int getDuration() {

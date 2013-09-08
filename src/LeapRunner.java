@@ -17,7 +17,7 @@ public class LeapRunner {
 	
 	static int timeInterval = 10;		// in milliseconds
 	
-	public static void main(String[] args) {
+	public void playSong(){
 
 		try {
 			player = new MIDIMusic("tnfdm.mid");
