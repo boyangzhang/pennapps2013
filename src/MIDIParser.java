@@ -55,7 +55,7 @@ public class MIDIParser {
 					duration = length - tick;
 				}
 				notes[j] = new Note(tick, duration, note, isRest);
-				System.out.println("@" + tick + " note " + note + " with dur " + duration + " and rest is " + isRest);
+				System.out.println("NOTE: " + notes[j] + "@" + tick + " note " + note + " with dur " + duration + " and rest is " + isRest);
 			}
 			channels[i] = new Channel(notes);
 		}
