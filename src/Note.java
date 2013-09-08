@@ -29,5 +29,14 @@ public class Note {
 	public boolean isRest() {
 		return isRest;
 	}
+
+	public void setStart(long d) {
+		start = d;	
+	}
+
+	public void setDuration(long l) {
+		duration = l;
+		
+	}
 	
 }

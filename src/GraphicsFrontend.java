@@ -21,18 +21,16 @@ import javax.swing.SwingUtilities;
 public class GraphicsFrontend {
 
 	public static Timer timer;
-	private static int timeInterval = 20;		// in milliseconds
+	private static long timeInterval = 20;		// in milliseconds
 	final static String songFileName = "tnfdm.mid";
 
 	private static void createAndShowGUI() {
-
-//		Note[] notes = { new Note(0,10,30), new Note(10,20,5), new Note(30,50,10), new Note(80, 500, 100) };
-//		Channel[] channels = { new Channel(notes) };
 		
 		// parse data for GUI
 		Sequence midi = null;
 		try {
 			midi = MidiSystem.getSequence(new File(songFileName));
+			timeInterval = midi.getMicrosecondLength() / 1000 / 1440;
 		} catch (InvalidMidiDataException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -41,12 +39,13 @@ public class GraphicsFrontend {
 			e1.printStackTrace();
 		}
 		MIDIParser parser = new MIDIParser();
-		Channel[] channels = parser.parseMIDIData(midi);
+		Channel[] ch = parser.parseMIDIData(midi);
 		
 		//Create and set up the window.
 		JFrame frame = new JFrame("LeapMotion Music");
 	
-
+		Channel[] channels = parser.makeMIDIDataCompatibleForGUI(ch, 48);
+		
 		final TrackPanel tp = new TrackPanel(channels);
 		frame.add(tp);
 		

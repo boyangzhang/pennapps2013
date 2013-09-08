@@ -61,7 +61,21 @@ public class MIDIParser {
 		}
 		return channels;
 	}
-	
+
+	public Channel[] makeMIDIDataCompatibleForGUI(Channel[] channels, long windowWidth) {
+		for (int i = 0; i < channels.length; i++) {
+			Channel ch = channels[i];
+			for (int j = 0; j < ch.notes.length; j++){
+				Note n = ch.notes[j];
+				if (n != null) {
+					n.setStart(n.getStart() / windowWidth);
+					n.setDuration(n.getDuration() / windowWidth);
+				}
+			}
+		}
+		return channels;
+	}
+
 	public static void main(String[] args) throws Exception {
 		Sequence midi = MidiSystem.getSequence(new File("tnfdm.mid"));
 		MIDIParser parser = new MIDIParser();
