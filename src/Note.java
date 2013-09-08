@@ -1,26 +1,33 @@
 
 public class Note {
 
-	private int start;
-	private int duration;
-	private int pitch;
+	private long start;
+	private long duration;
+	private long pitch;
+	private boolean isRest;
 	
-	public Note(int start, int duration, int pitch) {
+	public Note(long start, long duration, long pitch, boolean isRest) {
+		this.start = start;
 		this.duration = duration;
 		this.pitch = pitch;
 		this.start = start;
+		this.isRest = isRest;
 	}
 	
-	public int getDuration() {
+	public long getDuration() {
 		return duration;
 	}
 	
-	public int getPitch() {
+	public long getPitch() {
 		return pitch;
 	}
 
-	public int getStart() {
+	public long getStart() {
 		return start;
+	}
+
+	public boolean isRest() {
+		return isRest;
 	}
 	
 }
